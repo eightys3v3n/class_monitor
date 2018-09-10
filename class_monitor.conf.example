@@ -1,0 +1,22 @@
+[MyMRU]
+  username = mymru_username
+  password = mymru_password
+
+[Notification]
+  username = gmail_address_without_@gmail.com
+  password = gmail_password
+  from_email = gmail_address
+
+[General]
+  # Number of minutes to wait between checking the website.
+  # Won't allow less than 10 minutes
+  check_interval = 10
+
+
+#[Class 0]
+#  client_email = email or number email
+#  name = Full course name
+#  number = 1001
+#  term = 201804 # can be extracted from the website
+#  subject = SUBJ
+#  section = 11111
