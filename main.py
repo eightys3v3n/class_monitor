@@ -187,7 +187,7 @@ def find_sections(subject, name, number):
         s = s.replace('\n', '|')
 
         # Match the class text and extract relevant information
-        regex = '^(.*)(\d{{5}}) \w{{4}} \d{{4}} \d{{3}} .*{}.* (\d+) (\d+) -?(\d+) (\d+) .*'.format(name)
+        regex = '^(.*)(\d{{5}}) \w{{4}} \d{{4}} \d{{3}} .*{}.* (\d+) (\d+) (-?\d+) (\d+) .*'.format(name)
         match = re.match(regex, s)
         if match is None:
             raise Exception("Class didn't match regex\n{}".format(s))
