@@ -328,6 +328,8 @@ def read_config(path):
     if 'password' not in email_info:
         email_info['password'] = getpass('Email Password: ')
     parsed_config['email_info'] = email_info
+    parsed_config['admin_email'] = email_info['admin_email']
+    del email_info['admin_email']
 
     # Retrieve raw course configs for all sections that start with 'Class'
     course_sections = [s for s in config.sections() if s.startswith('Class')]
@@ -371,6 +373,8 @@ def main():
     email_info     = config['email_info']
     check_interval = int(config['check_interval'])
     courses        = config['courses']
+    admin_email    = config['admin_email']
+    print(admin_email)
 
     print("Courses:")
     for course in courses:
@@ -381,10 +385,17 @@ def main():
         print(c)
 
     while True:
-        check_courses(username, password, email_info, courses)
-        print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
+        try:
+            check_courses(username, password, email_info, courses)
+            print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
+        except Exception as e:
+            print("Failed to check courses: {}".format(e))
+            notify_email("Failed to check courses: {}".format(e), **email_info, client=admin_email)
         time.sleep(check_interval * 60)
 
 
 if __name__ == '__main__':
-    main()
+		try:
+				main()
+		except:
+				send_text("Class monitor crashed")
