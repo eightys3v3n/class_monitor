@@ -8,6 +8,7 @@ import code
 import time
 import os
 import re
+import sys
 
 
 """
@@ -18,7 +19,7 @@ A script that checks for available spaces in classes via the Mount Royal website
 """
 
 
-HEADLESS = True
+HEADLESS = False
 
 
 class ButtonNotFound(Exception): pass
@@ -261,39 +262,54 @@ def close():
 	browser.__exit__(None, None, None)
 
 
-def check_courses(username, password, email_info, courses):
+def check_courses(username, password, email_info, courses, operation_delay):
 	print("{:60}".format("Launching browser..."), end='')
+	sys.stdout.flush()
 	open_browser()
+	time.sleep(operation_delay)
 	print("Done.")
 
 	print("{:60}".format("Navigating to MyMRU..."), end='')
+	sys.stdout.flush()
 	nav_MyMRU()
+	time.sleep(operation_delay)
 	print("Done.")
 
 	print("{:60}".format("Logging in..."), end='')
+	sys.stdout.flush()
 	login_MyMRU(username, password)
+	time.sleep(operation_delay)
 	print("Done.")
 
 	for course in courses:
 		print("{:60}".format("Navigating to course listings..."), end='')
+		sys.stdout.flush()
 		nav_course_list()
+		time.sleep(operation_delay)
 		print("Done.")
 
 		print("{:60}".format("Selecting term..."), end='')
+		sys.stdout.flush()
 		select_term(course.term)
+		time.sleep(operation_delay)
 		print("Done.")
 
 		print("{:60}".format("Selecting subject..."), end='')
+		sys.stdout.flush()
 		select_subject(course.subject)
+		time.sleep(operation_delay)
 		print("Done.")
 
 		print("{:60}".format("Selecting class..."), end='')
+		sys.stdout.flush()
 		select_class(course.name, course.number)
-
+		time.sleep(operation_delay)
 		print("Done.")
 
 		print("{:60}".format("Finding all sections..."), end='')
+		sys.stdout.flush()
 		all_sections = find_sections(course.subject, course.name, course.number)
+		time.sleep(operation_delay)
 		print("Done.")
 
 		sections = trim_sections(all_sections, course.desired_sections)
@@ -311,6 +327,9 @@ def read_config(path):
 	if 'check_interval' in config['General']:
 		parsed_config['check_interval'] = int(config['General']['check_interval'])
 		parsed_config['check_interval'] = max(10, parsed_config['check_interval'])
+
+	if 'operation_delay' in config['General']:
+		parsed_config['operation_delay'] = int(config['General']['operation_delay']
 
 	# MyMRU username and password. Parse or prompt.
 	if 'username' in config['MyMRU']:
@@ -373,6 +392,7 @@ def main():
 	password	   = config['password']
 	email_info	 = config['email_info']
 	check_interval = int(config['check_interval'])
+	operation_delay = int(config['operation_delay'])
 	courses		= config['courses']
 	admin_email	= config['admin_email']
 	print(admin_email)
@@ -387,7 +407,7 @@ def main():
 
 	while True:
 		try:
-			check_courses(username, password, email_info, courses)
+			check_courses(username, password, email_info, courses, operation_delay)
 			print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
 		except Exception as e:
 			print("Failed to check courses: {}".format(e))
@@ -399,4 +419,4 @@ if __name__ == '__main__':
 	try:
 		main()
 	except:
-		notify_email("Class monitor crashed", **email_info, to_email=admin_email)
+		notify_email("Class monitor has stopped", **email_info, to_email=admin_email)

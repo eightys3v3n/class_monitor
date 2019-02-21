@@ -8,10 +8,8 @@
   from_email = gmail_address
 
 [General]
-  # Number of minutes to wait between checking the website.
-  # Won't allow less than 10 minutes
-  check_interval = 10
-
+  check_interval = 10   # Number of minutes to wait between checking the website. Must be >= 10
+  operation_delay = 2   # Seconds to wait between browser operations; for demo ;)
 
 #[Class 0]
 #  client_email = email or number email
