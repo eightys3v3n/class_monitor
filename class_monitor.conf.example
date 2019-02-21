@@ -5,16 +5,17 @@
 [Notification]
   username = gmail_address_without_@gmail.com
   password = gmail_password
-  from_email = gmail_address
+  from_email = gmail_address_with_@gmail
+  admin_email = email                     # send a copy of notifications here as well as stopped notifications
 
 [General]
   check_interval = 10   # Number of minutes to wait between checking the website. Must be >= 10
   operation_delay = 2   # Seconds to wait between browser operations; for demo ;)
 
-#[Class 0]
-#  client_email = email or number email
-#  name = Full course name
-#  number = 1001
-#  term = 201804 # can be extracted from the website
-#  subject = SUBJ
-#  section = 11111
+[Class 1]
+  client_email = your_phone@txt.your_providers_service.com
+  name = ProgrammingII Object Oriented
+  number = 1502
+  term = 201901
+  subject = COMP
+  section = 10643
