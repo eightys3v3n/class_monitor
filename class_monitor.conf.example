@@ -6,11 +6,14 @@
   username = gmail_address_without_@gmail.com
   password = gmail_password
   from_email = gmail_address_with_@gmail
-  admin_email = email                     # send a copy of notifications here as well as stopped notifications
+  # send a copy of notifications here as well as stopped notifications
+  admin_email = email
 
 [General]
-  check_interval = 10   # Number of minutes to wait between checking the website. Must be >= 10
-  operation_delay = 2   # Seconds to wait between browser operations; for demo ;)
+  # Number of minutes to wait between checking the website. Must be >= 10
+  check_interval = 10
+  # Seconds to wait between browser operations; for demo
+  operation_delay = 2
 
 [Class 1]
   client_email = your_phone@txt.your_providers_service.com
