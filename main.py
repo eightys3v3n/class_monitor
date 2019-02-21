@@ -329,7 +329,7 @@ def read_config(path):
 		parsed_config['check_interval'] = max(10, parsed_config['check_interval'])
 
 	if 'operation_delay' in config['General']:
-		parsed_config['operation_delay'] = int(config['General']['operation_delay']
+		parsed_config['operation_delay'] = int(config['General']['operation_delay'])
 
 	# MyMRU username and password. Parse or prompt.
 	if 'username' in config['MyMRU']:
