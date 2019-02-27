@@ -19,7 +19,7 @@ A script that checks for available spaces in classes via the Mount Royal website
 """
 
 
-HEADLESS = False
+HEADLESS = True
 
 
 class ButtonNotFound(Exception): pass
@@ -395,7 +395,7 @@ def main():
 	operation_delay = int(config['operation_delay'])
 	courses		= config['courses']
 	admin_email	= config['admin_email']
-	print(admin_email)
+	print("Administrator email:", admin_email)
 
 	print("Courses:")
 	for course in courses:
