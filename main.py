@@ -411,7 +411,7 @@ def main():
 			print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
 		except Exception as e:
 			print("Failed to check courses: {}".format(e))
-			notify_email("Failed to check courses: {}".format(e), **email_info, client=admin_email)
+			notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
 		time.sleep(check_interval * 60)
 
 
