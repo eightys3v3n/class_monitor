@@ -20,5 +20,6 @@
   name = ProgrammingII Object Oriented
   number = 1502
   term = 201901
+  # YYYY(01 for winter credit ... 04 for fall credit)
   subject = COMP
-  section = 10643
+  section = 10643 # CRN number

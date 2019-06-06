@@ -411,12 +411,12 @@ def main():
 			print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
 		except Exception as e:
 			print("Failed to check courses: {}".format(e))
-			notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
+			try:
+				notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
+			except Exception as e:
+				print("Failed to send email", e)
 		time.sleep(check_interval * 60)
 
 
 if __name__ == '__main__':
-	try:
-		main()
-	except:
-		notify_email("Class monitor has stopped", **email_info, to_email=admin_email)
+	main()
