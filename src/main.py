@@ -250,6 +250,9 @@ def notify_availability(email_info, courses):
         if course['status'] == "Available":
             clients[course['info'].client_email] += "\n{}.{}({}) has space available".format(
                 course['info'].subject, course['info'].number, section)
+        elif config['notify_on_full']:
+            clients[course['info'].client_email] += "\n{}.{}({}) doesn't have any space available.".format(
+                course['info'].subject, course['info'].number, section)
     for client, msg in clients.items():
         if msg != '':
             msg = msg[1:]
@@ -321,6 +324,9 @@ def check_courses(username, password, email_info, courses, operation_delay):
 
 
 def read_config(path):
+    """This function is redundant and badly written.
+    Instead the class parsing should happen separate of configuration reading.
+    Then new configuration options could just be added to the conf file and used in code; rather than being added here as well."""
     config = configparser.ConfigParser()
     config.read(path)
     parsed_config = defaultdict(None)
@@ -328,6 +334,14 @@ def read_config(path):
     if 'check_interval' in config['General']:
         parsed_config['check_interval'] = int(config['General']['check_interval'])
         parsed_config['check_interval'] = max(10, parsed_config['check_interval'])
+
+    parsed_config['notify_on_full'] = False
+    if 'notify_on_full' in config['General']:
+        val = config['General']['notify_on_full']
+        if val in ('False', 'True'):
+            parsed_config['notify_on_full'] = eval(config['General']['notify_on_full'])
+        else:
+            print("Invalid setting for notify_on_full. Must be one of [True, False], not {}".format(val))
 
     if 'operation_delay' in config['General']:
         parsed_config['operation_delay'] = int(config['General']['operation_delay'])
@@ -385,7 +399,7 @@ def read_config(path):
 
 
 def main():
-    global admin_email, email_info
+    global admin_email, email_info, config
     CONFIG_FILE = 'class_monitor.conf'
 
     config       = read_config(CONFIG_FILE)
