@@ -408,16 +408,16 @@ def main():
         c = '\n'.join(c)
         print(c)
 
-        while True:
+    while True:
+        try:
+            check_courses(username, password, email_info, courses, operation_delay)
+            print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
+        except Exception as e:
             try:
-                check_courses(username, password, email_info, courses, operation_delay)
-                print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
+                notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
             except Exception as e:
-                try:
-                    notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
-                except Exception as e:
-                    print("Failed to send email", e)
-            time.sleep(check_interval * 60)
+                print("Failed to send email", e)
+        time.sleep(check_interval * 60)
 
 
 if __name__ == '__main__':
