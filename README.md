@@ -6,6 +6,8 @@ Requires google-chrome to be installed.
 Rename class_monitor.conf.example to class_monitor.conf
 Configure the classes you wish to watch for and your login details.
 Then run with the following.
-```. bin/activate
+```
+. bin/activate
 cd src
-python main.py```
+python main.py
+```
