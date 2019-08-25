@@ -257,8 +257,10 @@ def notify_availability(email_info, courses):
         if msg != '':
             msg = msg[1:]
             notify_email(msg, **email_info, to_email=client)
+            print("Notified {}.".format(client))
             # used if the script host also wants a message when a client gets a message.
-            # notify_email("{} -> {}".format(msg, client), **email_info, to_email='maintainer email')
+            notify_email("{} -> {}".format(msg, client), **email_info, to_email=admin_email)
+            print("Notified admin, {}.".format(admin_email))
 
 
 def close():
@@ -320,6 +322,7 @@ def check_courses(username, password, email_info, courses, operation_delay):
         availabilities = check_availability(course.desired_sections, sections)
         availabilities = {k: {'status': v, 'info': course} for k, v in availabilities.items()}
         notify_availability(email_info, availabilities)
+    print("Finished.")
     close()
 
 
@@ -427,6 +430,7 @@ def main():
             check_courses(username, password, email_info, courses, operation_delay)
             print("Checked courses. Waiting for {} minutes before checking again.".format(check_interval))
         except Exception as e:
+            print("Failed to check courses.", e)
             try:
                 notify_email("Failed to check courses: {}".format(e), **email_info, to_email=admin_email)
             except Exception as e:
