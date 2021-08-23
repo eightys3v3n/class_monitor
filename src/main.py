@@ -21,6 +21,7 @@ A script that checks for available spaces in classes via the Mount Royal website
 
 
 HEADLESS = True
+DEBUG = False
 
 
 class ButtonNotFound(Exception): pass
@@ -84,16 +85,18 @@ class Course:
         return self.__str__()
 
 
-def click_button(name=None, value=None):
+def click_button(name=None, value=None, css=None):
     global browser
     complete = False
 
     for i in range(10):
         try:
             if name is not None:
-                button = browser.find_by_name(name)
+                button = browser.find_by_name(name).first
             elif value is not None:
-                button = browser.find_by_value(value)
+                button = browser.find_by_value(value).first
+            elif css is not None:
+                button = browser.find_by_css(css).first
         except TypeError:
             time.sleep(0.5)
             continue
@@ -134,7 +137,7 @@ def login_MyMRU(username, password):
     global browser
     browser.fill('username', username)
     browser.fill('password', password)
-    click_button('submit')
+    click_button(css="button[type='submit']")
 
 
 def nav_course_list():
@@ -189,13 +192,15 @@ def find_sections(subject, name, number):
         s = s.replace('\n', '|')
 
         # Match the class text and extract relevant information
-        regex = '^(.*)(\d{{5}}) \w{{4}} \d{{4}} \d{{3}} .*{}.* (\d+) (\d+) (-?\d+) (\d+) .*'.format(name)
+        regex = '^(.*)(\d{{5}}) \w{{4}} \d{{4}} \d{{3}} .*{}.* (\d{{1,2}}) (\d{{1,2}}) (-?\d{{1,2}}) \d{{1,2}} (\d{{1,2}}) \d{{1,2}} .*'.format(name)
+        # Select	CRN	Subj	Crse	Sec	Cred	Title	Typ	Days	Time	Cap  Act  Rem  WL Cap  WL Act  WL Rem	Instructor	Date (MM/DD)	Location	Attribute
+        # 'C 50849 FNCE 3228 001 3.000 Advanced Corporate Finance|LEC|TR 11:30 am-12:50 pm      35   35   0    35      5       30 Amina A. Beecroft (P) 09/09-12/22 EB EB2122 .|            Note:|Prerequisite checking is in effect for this course. Refer to the current MRU Calendar for details.'
         match = re.match(regex, s)
         if match is None:
             raise Exception("Class didn't match regex\n{}".format(s))
 
         match = match.groups()
-        status = match[0]
+        status = match[0].strip()
         number = match[1]
         max_size = int(match[2])
         accepted = int(match[3])
@@ -227,6 +232,10 @@ def check_availability(desired_sections, sections):
     for s, i in sections.items():
         if s not in desired_sections:
             continue
+
+        if DEBUG:
+            for k in i.items(): print(k)
+            print()
 
         if i['remaining'] > 0:
             if i['wait_list'] > 0:
@@ -321,6 +330,12 @@ def check_courses(username, password, email_info, courses, operation_delay):
         sections = trim_sections(all_sections, course.desired_sections)
         availabilities = check_availability(course.desired_sections, sections)
         availabilities = {k: {'status': v, 'info': course} for k, v in availabilities.items()}
+
+        if DEBUG:
+            for s in availabilities.items(): print(s)
+            print()
+            input()
+        
         notify_availability(email_info, availabilities)
     print("Finished.")
     close()
@@ -375,7 +390,7 @@ def read_config(path):
     # Sort all the raw course configs by the course number. Making a list of sections to monitor.
     merged_courses = {}
     for raw_course in raw_courses:
-        n = raw_course['number']
+        n = '{}-{}'.format(raw_course['number'], raw_course['term'])
         if n not in merged_courses:
             merged_courses[n] = dict(raw_course.items())
             merged_courses[n]['sections'] = [merged_courses[n]['section'], ]
@@ -410,6 +425,7 @@ def main():
     password       = config['password']
     assert username is not None, "Username can't be blank."
     assert password is not None, "Password can't be blank."
+
     email_info   = config['email_info']
     check_interval = int(config['check_interval'])
     operation_delay = int(config['operation_delay'])
